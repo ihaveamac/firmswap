@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import shutil
 import sys
 
@@ -41,11 +42,10 @@ for arg in sys.argv[1:]:
         firm104_filename = arg[10:]
         firm104_custom = True
 
-if "--nobackup" not in sys.argv:
-    print("- copying {0} to {0}.bak".format(nandimage_filename))
-    shutil.copy(nandimage_filename, "{0}.bak".format(nandimage_filename))
-else:
-    print("- not backing up {0} since --nobackup was used".format(nandimage_filename))
+if not os.path.isfile(nandimage_filename):
+    print("! {0} doesn't exist.".format(nandimage_filename))
+    sys.exit()
+
 nandimage = open(nandimage_filename, "r+b")
 nandimage.seek(0x106)
 # actually part of "Size of the NCSD image", but there's only two sizes
@@ -72,6 +72,23 @@ if not firm110_custom:
     firm110_filename = firm110_filename.format(nand_type)
 if not firm104_custom:
     firm104_filename = firm104_filename.format(nand_type)
+
+if not os.path.isfile(firm110_filename):
+    print("! {0} doesn't exist.".format(firm110_filename))
+    sys.exit()
+if not os.path.isfile(firm104_filename):
+    print("! {0} doesn't exist.".format(firm104_filename))
+    sys.exit()
+
+if "--nobackup" not in sys.argv:
+    nandimage.close()
+    # not sure if I really need to close nandimage before copying
+    # but I imagine Windows will throw an error if I do it, because it loves to
+    print("- copying {0} to {0}.bak".format(nandimage_filename))
+    shutil.copy(nandimage_filename, "{0}.bak".format(nandimage_filename))
+    nandimage = open(nandimage_filename, "r+b")
+else:
+    print("- not backing up {0} since --nobackup was used".format(nandimage_filename))
 
 print("- reading FIRM0FIRM1 of {0}".format(nandimage_filename))
 nandimage.seek(0xB130000)
