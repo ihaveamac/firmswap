@@ -95,8 +95,8 @@ nandimage.seek(0xB130000)
 orig_firm = list(nandimage.read(0x800000))
 firm110_file = open(firm110_filename, "rb")
 firm104_file = open(firm104_filename, "rb")
-firm110 = firm110_file.read(0x800000)
-firm104 = firm104_file.read(0x800000)
+firm110 = firm110_file.read(0x400000)
+firm104 = firm104_file.read(0x400000)
 
 print("- xoring FIRM0FIRM1 with {0} and {1}".format(firm110_filename, firm104_filename))
 for b in range(0, 0x400000):
