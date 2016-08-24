@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import os
 import shutil
 import sys
@@ -11,7 +12,6 @@ default behavior:
   - determine if NAND.bin is for New3DS/Old3DS
   - read FIRM0FIRM1 partition
   - xor FIRM0 with 11.0 FIRM, then 10.4 FIRM
-  - xor FIRM1 the same way
   - write to NAND.bin
 
 options (for advanced use only):
@@ -20,6 +20,7 @@ options (for advanced use only):
   --nobackup          - do not create a backup of NANDimage
   --firm110=<file>    - use file instead of firm_110_<model>3DS.bin
   --firm104=<file>    - use file instead of firm_104_<model>3DS.bin
+  --swapfirm1         - xor FIRM1 partition in addition to FIRM0
   --forcenew          - assume NANDimage is for New3DS
   --forceold          - assume NANDimage is for Old3DS"""
 
@@ -95,16 +96,18 @@ nandimage.seek(0xB130000)
 orig_firm = list(nandimage.read(0x800000))
 firm110_file = open(firm110_filename, "rb")
 firm104_file = open(firm104_filename, "rb")
-firm110 = firm110_file.read(0x400000)
-firm104 = firm104_file.read(0x400000)
+firm110 = firm110_file.read(0x400000).ljust(0x400000, b"\0")
+firm104 = firm104_file.read(0x400000).ljust(0x400000, b"\0")
 
-print("- xoring FIRM0FIRM1 with {0} and {1}".format(firm110_filename, firm104_filename))
-for b in range(0, 0x400000):
+print("- xoring FIRM0 with {0} and {1}".format(firm110_filename, firm104_filename))
+for b in range(0x400000):
     orig_firm[b] = (orig_firm[b] ^ firm110[b]) ^ firm104[b]
-    print("- progress: 0x%X out of 0x800000" % (b + 1), end='\r')
-for b in range(0x400000, 0x800000):
-    orig_firm[b] = (orig_firm[b] ^ firm110[b - 0x400000]) ^ firm104[b - 0x400000]
-    print("- progress: 0x%X out of 0x800000" % (b + 1), end='\r')
+    print("- progress: 0x%X out of 0x400000" % (b + 1), end='\r')
+if "--swapfirm1" in sys.argv:
+    print("\n- xoring FIRM1 with {0} and {1}".format(firm110_filename, firm104_filename))
+    for b in range(0x400000):
+        orig_firm[b + 0x400000] = (orig_firm[b + 0x400000] ^ firm110[b]) ^ firm104[b]
+        print("- progress: 0x%X out of 0x400000" % (b + 1), end='\r')
 
 print("\n- writing to NAND.bin")
 nandimage.seek(0xB130000)
