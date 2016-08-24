@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# firmswap.py by ihaveamac
+# license: MIT License
+# https://github.com/ihaveamac/firmswap
+
 import os
 import shutil
 import sys
