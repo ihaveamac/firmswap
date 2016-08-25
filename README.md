@@ -1,6 +1,8 @@
 # firmswap
 My Python 3 implementation of the hardmod downgrade for Nintendo 3DS.
 
+Yes, I know Python isn't the best language for this (something in C could probably run in a second or less), but it works and it's all I know.
+
 ## Default behavior
 * Create backup of `NAND.bin` named `NAND.bin.bak`
 * determine if `NAND.bin` is for New3DS/Old3DS
