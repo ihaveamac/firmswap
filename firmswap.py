@@ -15,15 +15,15 @@ default behavior:
   - create backup of NAND.bin named NAND.bin.bak
   - determine if NAND.bin is for New3DS/Old3DS
   - read FIRM0FIRM1 partition
-  - xor FIRM0 with 11.0 FIRM, then 10.4 FIRM
+  - xor FIRM0 with firm_110_<model>3DS.bin, firm_104_<model>3DS.bin
   - write to NAND.bin
 
 options (for advanced use only):
   --nandimage=<file>  - use <file> instead of default NAND.bin
                         backup file will be filename.bak
   --nobackup          - do not create a backup of NANDimage
-  --firm110=<file>    - use file instead of firm_110_<model>3DS.bin
-  --firm104=<file>    - use file instead of firm_104_<model>3DS.bin
+  --firm110=<file>    - use <file> instead of firm_110_<model>3DS.bin
+  --firm104=<file>    - use <file> instead of firm_104_<model>3DS.bin
   --swapfirm1         - xor FIRM1 partition in addition to FIRM0
   --forcenew          - assume NANDimage is for New3DS
   --forceold          - assume NANDimage is for Old3DS"""
@@ -106,12 +106,12 @@ firm104 = firm104_file.read(0x400000).ljust(0x400000, b"\0")
 print("- xoring FIRM0 with {0} and {1}".format(firm110_filename, firm104_filename))
 for b in range(0x400000):
     orig_firm[b] = (orig_firm[b] ^ firm110[b]) ^ firm104[b]
-    print("- progress: 0x%X out of 0x400000" % (b + 1), end='\r')
+    print("- progress: 0x{:X} out of 0x400000".format(b + 1), end='\r')
 if "--swapfirm1" in sys.argv:
     print("\n- xoring FIRM1 with {0} and {1}".format(firm110_filename, firm104_filename))
     for b in range(0x400000):
         orig_firm[b + 0x400000] = (orig_firm[b + 0x400000] ^ firm110[b]) ^ firm104[b]
-        print("- progress: 0x%X out of 0x400000" % (b + 1), end='\r')
+        print("- progress: 0x{:X} out of 0x400000".format(b + 1), end='\r')
 
 print("\n- writing to NAND.bin")
 nandimage.seek(0xB130000)
