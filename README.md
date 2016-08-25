@@ -5,12 +5,14 @@ My Python 3 implementation of the hardmod downgrade for Nintendo 3DS.
 * Create backup of `NAND.bin` named `NAND.bin.bak`
 * determine if `NAND.bin` is for New3DS/Old3DS
 * read FIRM0FIRM1 partition
-* xor FIRM0 with `firm_110_<model>3DS.bin`, `firm_104_<model>3DS.bin`
+* xor FIRM0 with `firm_110_<model>3DS.bin` and `firm_104_<model>3DS.bin`
 * write to `NAND.bin`
+
+`firm_110_<model>3DS.bin` and `firm_104_<model>3DS.bin` should be extracted from decrypted 11.0/10.4 FIRM CIAs ExeFS.
 
 ## Usage
 ```bash
-firmswap.py [options]
+python3 firmswap.py [options]
 ```
 * `--nandimage=<file>` - use <file> instead of default `NAND.bin`, backup file will be `filename.bak`
 * `--nobackup` - do not create a backup of NANDimage
@@ -19,3 +21,6 @@ firmswap.py [options]
 * `--swapfirm1` - xor FIRM1 partition in addition to FIRM0
 * `--forcenew` - assume NANDimage is for New3DS
 * `--forceold` - assume NANDimage is for Old3DS
+
+## License
+`firmswap.py` is under the MIT license.
